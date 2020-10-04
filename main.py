@@ -39,5 +39,5 @@ def execute(filename):
 
 
 if __name__ == "__main__":
-    filename = input('Name of excel sheet with file extension:')
+    filename = input('Name of excel sheet:')
     execute(filename)
