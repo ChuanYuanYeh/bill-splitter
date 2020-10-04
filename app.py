@@ -11,6 +11,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config.suppress_callback_exceptions = True
+app.title = 'U FILL I SPLIT'
 server = app.server
 
 style = {'maxWidth': '960px', 'margin': 'auto'}
