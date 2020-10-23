@@ -105,13 +105,13 @@ def compute(rows, n_clicks, columns, obj):
             denom=0
             final += '**People responsible:**\n\n '
             for idx, ate in enumerate(row[2:]):
-                if ate != 'x':
+                if ate.lower() != 'x':
                     final += '{}\n\n '.format(row[2:].index[idx])
                     denom += 1
             pricePerPerson = total/denom
             final += '**Price per person responsible:** {}\n\n '.format(pricePerPerson)
             for idx, ate in enumerate(row[2:]):
-                if ate != 'x':
+                if ate.lower() != 'x':
                     priceToPay[row[2:].index[idx]] += pricePerPerson
 
         final += '# FINAL CALCULATION:\n\n'
