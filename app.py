@@ -116,7 +116,7 @@ def compute(rows, n_clicks, columns, obj):
 
         final += '# FINAL CALCULATION:\n\n'
         for key,value in priceToPay.items():
-            final += '{}: {} B\n\n '.format(key, round(math.floor(value), -1))
+            final += '{}: {} B\n\n '.format(key, math.floor(value))
 
         return final
     else:
