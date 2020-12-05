@@ -1,129 +1,57 @@
-import math
-import dash
+import os
 import cv2
-from dash.dependencies import Input, Output, State
-import dash_table
-import dash_table.FormatTemplate as FormatTemplate
-import dash_core_components as dcc
-import dash_html_components as html
-import pandas as pd
-import numpy as np
-from matplotlib import pyplot as plt
+import pytesseract
+from flask import Flask, flash, request, redirect, url_for, render_template
+from werkzeug.utils import secure_filename
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.config.suppress_callback_exceptions = True
-app.title = 'U FILL I SPLIT'
-server = app.server
-
-style = {'maxWidth': '960px', 'margin': 'auto'}
-
-app.layout = html.Div([
-    html.Div([
-        dcc.Markdown("""
-        # U FILL I SPLIT
-        ## A free, no-BS utility
-        ### How it works
-        1. Add the names of everyone.
-        2. Add all items and their corresponding prices.
-        3. Mark an 'x' under a person's name if he/she is not responsible for paying that specific item.
-        4. You're welcome.
-        """),
-        dcc.Input(
-            id='editing-columns-name',
-            placeholder='Enter a person\'s name...',
-            value='',
-            style={'padding': 10}
-        ),
-        html.Button('Add Person', id='editing-columns-button', n_clicks=0)
-    ]),
-    dash_table.DataTable(
-    id='editing-columns',
-    columns=[{
-        'name': 'Items',
-        'id': 'item',
-        'deletable': False,
-        'renamable': False
-    }, {
-        'name': 'Price',
-        'id': 'price',
-        'deletable': False,
-        'renamable': False,
-        'type': 'numeric',
-        'format': FormatTemplate.money(0)
-    }],
-    data=[],
-    editable=True,
-    row_deletable=True
-    ),
-    html.Button('Add Item', id='editing-rows-button', n_clicks=0),
-    html.Button('Calculate', id='calculate-button', n_clicks=0),
-    dcc.Markdown(id='output-content')
-], style=style)
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
-@app.callback(
-    Output('editing-columns', 'columns'),
-    [Input('editing-columns-button', 'n_clicks')],
-    [State('editing-columns-name', 'value'),
-     State('editing-columns', 'columns')])
-def update_columns(n_clicks, value, existing_columns):
-    if n_clicks > 0:
-        existing_columns.append({
-            'id': value, 'name': value,
-            'renamable': True, 'deletable': True
-        })
-    return existing_columns
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.callback(
-    Output('editing-columns', 'data'),
-    [Input('editing-rows-button', 'n_clicks')],
-    [State('editing-columns', 'data'),
-     State('editing-columns', 'columns')])
-def add_row(n_clicks, rows, columns):
-    if n_clicks > 0:
-        rows.append({c['id']: '' for c in columns})
-    return rows
 
-@app.callback(
-    Output('output-content', 'children'),
-    [Input('editing-columns', 'data'),
-     Input('calculate-button', 'n_clicks')],
-    [State('editing-columns', 'data'),
-     State('editing-columns', 'columns')])
-def compute(rows, n_clicks, columns, obj):
-    if n_clicks > 0:
-        final = ""
-        df = pd.DataFrame(rows)
+@app.route('/', methods=['GET'])
+def home():
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
 
-        priceToPay = {}
-        for col in df:
-            if col not in ['item','price']:
-                priceToPay[col]=0
+    return render_template('template.html')
 
-        for idx,row in df.iterrows():
-            final += '### Calculating item: {}\n\n '.format(row['item'])
-            total=float(row['price'])
-            denom=0
-            final += '**People responsible:**\n\n '
-            for idx, ate in enumerate(row[2:]):
-                if ate.lower() != 'x':
-                    final += '{}\n\n '.format(row[2:].index[idx])
-                    denom += 1
-            pricePerPerson = total/denom
-            final += '**Price per person responsible:** {}\n\n '.format(pricePerPerson)
-            for idx, ate in enumerate(row[2:]):
-                if ate.lower() != 'x':
-                    priceToPay[row[2:].index[idx]] += pricePerPerson
 
-        final += '# FINAL CALCULATION:\n\n'
-        for key,value in priceToPay.items():
-            final += '{}: {} B\n\n '.format(key, round(math.floor(value), -1))
+@app.route('/', methods=['POST'])
+def upload_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return redirect(url_for('uploaded_file',
+                                filename=filename))
 
-        return final
-    else:
-        return ''
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    # Read the image
+    img = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename), 0)
+    # Simple thresholding
+    # ret, thresh1 = cv2.threshold(img, 210, 255, cv2.THRESH_BINARY)
+    extracted_text = pytesseract.image_to_string(img)
+    return extracted_text
+
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)
