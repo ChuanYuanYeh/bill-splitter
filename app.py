@@ -1,3 +1,4 @@
+import datetime
 import math
 import dash
 from dash.dependencies import Input, Output, State
@@ -21,20 +22,35 @@ app.layout = html.Div([
         dcc.Markdown("""
         # U FILL I SPLIT
         ## A free, no-BS utility
-        ### How it works
-        1. Add the names of everyone.
-        2. Add all items and their corresponding prices.
-        3. Mark an 'x' under a person's name if he/she is not responsible for paying that specific item.
-        4. You're welcome.
+        To lazy to add each item? Simply upload an image of your receipt!
         """),
-        dcc.Input(
+        dcc.Upload(
+            id='upload-image',
+            children=html.Div([
+                'Drag and Drop or ',
+                html.A('Select Files')
+            ]),
+            style={
+                'width': '100%',
+                'height': '60px',
+                'lineHeight': '60px',
+                'borderWidth': '1px',
+                'borderStyle': 'dashed',
+                'borderRadius': '5px',
+                'textAlign': 'center',
+                'margin': '10px'
+            },
+            multiple=False
+        ),
+    html.Div(id='output-image-upload')
+    ]),
+    dcc.Input(
             id='editing-columns-name',
             placeholder='Enter a person\'s name...',
             value='',
             style={'padding': 10}
         ),
-        html.Button('Add Person', id='editing-columns-button', n_clicks=0)
-    ]),
+    html.Button('Add Person', id='editing-columns-button', n_clicks=0),
     dash_table.DataTable(
     id='editing-columns',
     columns=[{
@@ -121,6 +137,32 @@ def compute(rows, n_clicks, columns, obj):
         return final
     else:
         return ''
+
+@app.callback(Output('output-image-upload', 'children'),
+              Input('upload-image', 'contents'),
+              State('upload-image', 'filename'),
+              State('upload-image', 'last_modified'))
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = parse_contents(list_of_contents, list_of_names, list_of_dates)
+        return children
+
+# Helper methods
+def parse_contents(contents, filename, date):
+    return html.Div([
+        html.H5(filename),
+        html.H6(datetime.datetime.fromtimestamp(date)),
+
+        # HTML images accept base64 encoded strings in the same format
+        # that is supplied by the upload
+        html.Img(src=contents),
+        html.Hr(),
+        html.Div('Raw Content'),
+        html.Pre(contents[0:200] + '...', style={
+            'whiteSpace': 'pre-wrap',
+            'wordBreak': 'break-all'
+        })
+    ])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
