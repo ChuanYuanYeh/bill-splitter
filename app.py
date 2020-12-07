@@ -1,6 +1,5 @@
 import math
 import dash
-import cv2
 from dash.dependencies import Input, Output, State
 import dash_table
 import dash_table.FormatTemplate as FormatTemplate
@@ -8,7 +7,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
