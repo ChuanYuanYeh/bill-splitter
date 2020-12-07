@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-     <title>U Fill I Split</title>
+     <title>{% block title %}{% endblock %} - U Fill I Split</title>
      <meta charset="UTF-8">
      <meta http-equiv="X-UA-Compatible" content="IE=Edge">
      <meta name="description" content="">
@@ -30,29 +30,35 @@
      </section>
 
      <!-- HOME -->
-     <section id="home">
-        <div class="overlay"></div>
-          <div class="container">
-               <div class="row">
-
-                    <div class="col-md-12 col-sm-12">
-                         <div class="home-info">
-                              <h1>U Fill I Split</h1>
-                              <h2>Patch 1.2 coming soon!</h2>
-                         </div>
-                    </div>
-
-               </div>
-          </div>
+     <nav>
+       <h1>U Fill I Split</h1>
+       <ul>
+         {% if g.user %}
+           <li><span>{{ g.user['username'] }}</span>
+           <li><a href="{{ url_for('auth.logout') }}" class="label">Log Out</a>
+         {% else %}
+           <li><a href="{{ url_for('auth.register') }}" class="label">Register</a>
+           <li><a href="{{ url_for('auth.login') }}" class="label">Log In</a>
+         {% endif %}
+       </ul>
+     </nav>
+     <section class="content">
+       <header>
+         {% block header %}{% endblock %}
+       </header>
+       {% for message in get_flashed_messages() %}
+         <div class="flash">{{ message }}</div>
+       {% endfor %}
+       {% block content %}{% endblock %}
      </section>
 
      <!-- SCRIPTS -->
-     <script src="static/js/jquery.js"></script>
-     <script src="static/js/bootstrap.min.js"></script>
-     <script src="static/js/vegas.min.js"></script>
-     <script src="static/js/countdown.js"></script>
-     <script src="static/js/init.js"></script>
-     <script src="static/js/custom.js"></script>
+     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/vegas.min.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/countdown.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/init.js') }}"></script>
+     <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 
 </body>
 </html>
