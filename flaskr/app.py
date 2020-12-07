@@ -21,7 +21,7 @@ def home():
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
 
-    return render_template('template.html')
+    return render_template('home.html')
 
 
 @app.route('/', methods=['POST'])
