@@ -15,6 +15,8 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        first_name = request.form['firstname']
+        last_name = request.form['lastname']
         db = get_db()
         error = None
 
@@ -29,8 +31,8 @@ def register():
 
         if error is None:
             db.execute(
-                'insert into user (username, password) values (?, ?)',
-                (username, generate_password_hash(password))
+                'insert into user (first_name, last_name, username, password) values (?, ?, ?, ?)',
+                (first_name, last_name, username, generate_password_hash(password))
             )
             db.commit()
             return redirect(url_for('auth.login'))

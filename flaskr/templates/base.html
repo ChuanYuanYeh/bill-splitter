@@ -29,27 +29,87 @@
           </div>
      </section>
 
+     <!-- GRID LINE -->
+    <section class="grid">
+      <div class="container">
+         <div class="row">
+
+           <div class="col-md-2 col-sm-2">
+             <div class="grid-line"></div>
+           </div>
+           <div class="col-md-2 col-sm-2">
+             <div class="grid-line"></div>
+           </div>
+           <div class="col-md-2 col-sm-2">
+             <div class="grid-line"></div>
+           </div>
+           <div class="col-md-2 col-sm-2">
+             <div class="grid-line"></div>
+           </div>
+           <div class="col-md-2 col-sm-2">
+             <div class="grid-line"></div>
+           </div>
+
+         </div>
+      </div>
+    </section>
+
+    <div class="menu-bg"></div>
+    <div class="menu-burger">☰</div>
+
+    <div class="menu-items">
+       <div class="container">
+         <div class="row">
+           <div class="col-md-offset-2 col-md-4 col-sm-6">
+            <h1>Navigations</h1>
+            <ul class="menu">
+              {% if g.user %}
+                <li><span>{{ g.user['username'] }}</span>
+                <li><a href="{{ url_for('auth.logout') }}" class="label">Log Out</a>
+              {% else %}
+                <li><a href="{{ url_for('auth.register') }}" class="label">Register</a>
+                <li><a href="{{ url_for('auth.login') }}" class="label">Log In</a>
+              {% endif %}
+              <li><a href="{{ url_for('index') }}" class="label">Home</a>
+              {% if g.user %}
+                <li><a class="action" href="{{ url_for('main.add_friend') }}" class="label">Add friend(s)</a>
+                <li><a class="action" href="{{ url_for('main.view_friend') }}" class="label">View friend(s)</a>
+              {% endif %}
+            </ul>
+           </div>
+
+           <div class="col-md-12 col-sm-12">
+             <ul class="social-icon">
+              <li class="line"></li>
+               <li><a href="https://www.facebook.com/julian.cyyeh" class="fa fa-facebook"></a></li>
+               <li><a href="https://www.linkedin.com/in/julianyeh/" class="fa fa-google"></a></li>
+               <li><a href="https://www.instagram.com/julianyeah/" class="fa fa-instagram"></a></li>
+             </ul>
+           </div>
+         </div>
+       </div>
+    </div>
+
      <!-- HOME -->
-     <nav>
-       <h1>U Fill I Split</h1>
-       <ul>
-         {% if g.user %}
-           <li><span>{{ g.user['username'] }}</span>
-           <li><a href="{{ url_for('auth.logout') }}" class="label">Log Out</a>
-         {% else %}
-           <li><a href="{{ url_for('auth.register') }}" class="label">Register</a>
-           <li><a href="{{ url_for('auth.login') }}" class="label">Log In</a>
-         {% endif %}
-       </ul>
-     </nav>
-     <section class="content">
-       <header>
-         {% block header %}{% endblock %}
-       </header>
-       {% for message in get_flashed_messages() %}
-         <div class="flash">{{ message }}</div>
-       {% endfor %}
-       {% block content %}{% endblock %}
+     <section id="home">
+      <div class="overlay"></div>
+        <div class="container">
+             <div class="row">
+
+                  <div class="col-md-12 col-sm-12">
+                       <div class="home-info">
+                        <header>
+                          {% block header %}{% endblock %}
+                        </header>
+                        {% for message in get_flashed_messages() %}
+                          <div class="flash">{{ message }}</div>
+                        {% endfor %}
+                        {% block content %}{% endblock %}
+                       </div>
+                  </div>
+
+             </div>
+        </div>
      </section>
 
      <!-- SCRIPTS -->

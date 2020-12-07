@@ -1,9 +1,21 @@
-<!doctype html>
-<html lang="en" dir="ltr">
-    <title>U Fill I Split</title>
-    <h1>Upload receipt</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-</html>
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Home{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <div>
+    <table>
+      <tr>
+        <th>
+          <a href=upload><button>Upload receipt</button></a>
+        </th>
+        <th>
+          <a href=manual><button>Manual upload</button></a>
+        </th>
+      </tr>
+    </table>
+  </div>
+  <div id='output'></div>
+{% endblock %}
