@@ -1,5 +1,5 @@
-from flask import render_template, jsonify
-from app import app
+from flask import render_template, jsonify, request
+from app import app, models, db
 import random
 
 
@@ -9,19 +9,28 @@ def index():
     return render_template('index.html', title='Home')
 
 
-@app.route('/map')
-def map():
-    return render_template('map.html', title='Map')
-
-
-@app.route('/map/refresh', methods=['POST'])
-def map_refresh():
-    points = [(random.uniform(48.8434100, 48.8634100),
-               random.uniform(2.3388000, 2.3588000))
-              for _ in range(random.randint(2, 9))]
-    return jsonify({'points': points})
-
-
 @app.route('/contact')
 def contact():
     return render_template('contact.html', title='Contact')
+
+
+@app.route('/added', methods=['POST'])
+def added():
+    fname = request.form.get("fname")
+    # Add TmpUser to db
+    # Create a temporary friend
+    tmpFriend = models.TmpFriend(
+        name=fname
+    )
+    # Insert the friend in the database
+    db.session.add(tmpFriend)
+    db.session.commit()
+    # Get the user from the database
+    check = models.TmpFriend.query.filter_by(name=fname).first()
+    message = 'Successfully added {}'.format(check.get_name())
+    return render_template("index.html", title='Home', message=message)
+
+
+@app.route('/items', methods=['GET'])
+def items():
+    return render_template("items.html", title='Add Items')

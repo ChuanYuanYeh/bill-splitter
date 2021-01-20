@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+
+	<h1 class="ui header">{{ title }}</h1>
+
+    {% if current_user.is_authenticated %}
+		<!-- Show list of friends with checkbox from friends table. -->
+    {% else %}
+		<!-- Show list of friends with checkbox from tmpFriends table. -->
+    {% endif %}
+
+{% endblock %}

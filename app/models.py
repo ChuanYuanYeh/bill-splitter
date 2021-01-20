@@ -39,3 +39,30 @@ class User(db.Model, UserMixin):
     def is_paid(self):
         return self.paid
 
+
+class TmpFriend(db.Model):
+
+    ''' A friend added by a user who hasn't signed up. '''
+
+    __tablename__ = 'tmp_friends'
+
+    name = db.Column(db.String, primary_key=True)
+
+    def get_name(self):
+        return self.name
+
+
+class Friend(db.Model):
+
+    ''' A friend added by a user who has signed up. '''
+
+    __tablename__ = 'friends'
+
+    email = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String, primary_key=True)
+
+    def get_email(self):
+        return self.email
+
+    def get_name(self):
+        return self.name
